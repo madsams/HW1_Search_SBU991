@@ -42,4 +42,6 @@ class DollarSpider(scrapy.Spider):
         item['summery'] = get_nested_text(response, 'div.lead::text')
         item['content'] = response.css('#echo-detail div').get()
         item['short_links'] = response.css('#short-l-copy::attr(value)').get()
+        item['tags'] = response.css('a.tags-detail::attr(title)').extract()
+
         yield item
