@@ -6,14 +6,22 @@ from scrapy.http import Request
 def get_nested_text(resp, selector):
     text = ''
     for s in resp.css(selector).extract():
-        text += s.strip().replace(r'[\t\n]', '')
+        text += my_strip(s)
     return text
+
+
+def my_strip(s):
+    return s.strip().replace(r'[\t\n]', '')
 
 
 class DollarItem(scrapy.Item):
     title = scrapy.Field()
-    lead = scrapy.Field()
-    body = scrapy.Field()
+    summery = scrapy.Field()
+    content = scrapy.Field()
+    date = scrapy.Field()
+    tags = scrapy.Field()
+    short_links = scrapy.Field()
+    images = scrapy.Field()
 
 
 class DollarSpider(scrapy.Spider):
@@ -24,14 +32,14 @@ class DollarSpider(scrapy.Spider):
 
     def parse(self, response, **kwargs):
         for service in response.css('li.service-special div.service-news-list'):
-            item = DollarItem()
-            item['title'] = service.css('h2.title a::attr(title)').get()
-            item['lead'] = get_nested_text(service, 'div.lead::text')
             link = service.css('h2.title a::attr(href)').get()
             if link:
-                yield Request(url=self.BASE_URL + link, callback=self.parse_page2, meta={'item': item})
+                yield Request(url=self.BASE_URL + link, callback=self.parse_page2)
 
     def parse_page2(self, response):
-        item = response.meta['item']
-        item['body'] = response.css('body').get()
+        item = DollarItem()
+        item['title'] = my_strip(response.css('h1.title::text').get())
+        item['summery'] = get_nested_text(response, 'div.lead::text')
+        item['content'] = response.css('#echo-detail div').get()
+        item['short_links'] = response.css('#short-l-copy::attr(value)').get()
         yield item
