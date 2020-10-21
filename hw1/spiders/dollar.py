@@ -25,6 +25,7 @@ class DollarItem(scrapy.Item):
     tags = scrapy.Field()
     short_links = scrapy.Field()
     images = scrapy.Field()
+    image_urls = scrapy.Field()
 
 
 class DollarSpider(scrapy.Spider):
@@ -47,5 +48,6 @@ class DollarSpider(scrapy.Spider):
         item['date'] = response.css('time.news-time::attr(datetime)').extract()
         item['tags'] = response.css('a.tags-detail::attr(title)').extract()
         item['short_links'] = response.css('#short-l-copy::attr(value)').get()
+        item['image_urls'] = response.css('.article-body img::attr(src)').extract()
 
         yield item
