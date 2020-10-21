@@ -11,7 +11,10 @@ def get_nested_text(resp, selector):
 
 
 def my_strip(s):
-    return s.strip().replace(r'[\t\n]', '')
+    if s is not None:
+        return s.strip().replace(r'[\t\n]', '')
+    else:
+        return ""
 
 
 class DollarItem(scrapy.Item):
@@ -41,7 +44,8 @@ class DollarSpider(scrapy.Spider):
         item['title'] = my_strip(response.css('h1.title::text').get())
         item['summery'] = get_nested_text(response, 'div.lead::text')
         item['content'] = response.css('#echo-detail div').get()
-        item['short_links'] = response.css('#short-l-copy::attr(value)').get()
+        item['date'] = response.css('time.news-time::attr(datetime)').extract()
         item['tags'] = response.css('a.tags-detail::attr(title)').extract()
+        item['short_links'] = response.css('#short-l-copy::attr(value)').get()
 
         yield item
