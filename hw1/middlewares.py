@@ -6,6 +6,9 @@
 # https://docs.scrapy.org/en/latest/topics/spider-middleware.html
 
 from scrapy import signals
+from scrapy.downloadermiddlewares.retry import RetryMiddleware
+from scrapy.utils.response import response_status_message
+from time import sleep
 
 
 class Hw1SpiderMiddleware(object):
@@ -101,3 +104,16 @@ class Hw1DownloaderMiddleware(object):
 
     def spider_opened(self, spider):
         spider.logger.info('Spider opened: %s' % spider.name)
+
+
+class SleepRetryMiddleware(RetryMiddleware):
+    def __init__(self, settings):
+        RetryMiddleware.__init__(self, settings)
+
+    def process_response(self, request, response, spider):
+        if response.status in [403]:
+            sleep(3)  # few minutes
+            reason = response_status_message(response.status)
+            return self._retry(request, reason, spider) or response
+
+        return super(SleepRetryMiddleware, self).process_response(request, response, spider)
