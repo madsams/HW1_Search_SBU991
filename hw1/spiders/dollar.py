@@ -38,7 +38,12 @@ class DollarSpider(scrapy.Spider):
         for service in response.css('li.service-special div.service-news-list'):
             link = service.css('h2.title a::attr(href)').get()
             if link:
-                yield Request(url=self.BASE_URL + link, callback=self.parse_page2)
+                yield Request(
+                    url=self.BASE_URL + link,
+                    callback=self.parse_page2,
+                    meta={'dont_redirect': True,
+                          'handle_httpstatus_list': [302]
+                          })
 
     def parse_page2(self, response):
         item = DollarItem()
