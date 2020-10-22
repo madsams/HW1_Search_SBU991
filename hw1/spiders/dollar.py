@@ -33,7 +33,8 @@ class DollarSpider(scrapy.Spider):
     allowed_domains = ['donya-e-eqtesad.com']
     start_urls = [
         'https://donya-e-eqtesad.com/tags/%D9%82%DB%8C%D9%85%D8%AA_%D8%AF%D9%84%D8%A7%D8%B1' + '/?page=%s' % page
-        for page in range(1, 76)]
+        # for page in range(1, 76)]
+        for page in range(1, 2)]
     BASE_URL = 'https://donya-e-eqtesad.com/'
 
     def parse(self, response, **kwargs):
@@ -50,11 +51,11 @@ class DollarSpider(scrapy.Spider):
     def parse_page2(self, response):
         item = DollarItem()
         item['title'] = my_strip(response.css('h1.title::text').get())
-        item['summery'] = get_nested_text(response, 'div.lead::text')
-        item['content'] = response.css('#echo-detail div').get()
-        item['date'] = response.css('time.news-time::attr(datetime)').extract()
-        item['tags'] = response.css('a.tags-detail::attr(title)').extract()
-        item['short_links'] = response.css('#short-l-copy::attr(value)').get()
-        item['image_urls'] = response.css('.article-body img::attr(src)').extract()
+        # item['summery'] = get_nested_text(response, 'div.lead::text')
+        # item['content'] = response.css('#echo-detail div').get()
+        # item['date'] = response.css('time.news-time::attr(datetime)').extract()
+        # item['tags'] = response.css('a.tags-detail::attr(title)').extract()
+        # item['short_links'] = response.css('#short-l-copy::attr(value)').get()
+        # item['image_urls'] = response.css('.article-body img::attr(src)').extract()
 
         yield item
