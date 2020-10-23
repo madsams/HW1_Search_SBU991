@@ -4,7 +4,7 @@
 #
 # Don't forget to add your pipeline to the ITEM_PIPELINES setting
 # See: https://docs.scrapy.org/en/latest/topics/item-pipeline.html
-from scrapy.exceptions import NotConfigured
+import pymongo
 
 
 class Hw1Pipeline(object):
@@ -12,24 +12,27 @@ class Hw1Pipeline(object):
         return item
 
 
-class DatabasePipeline(object):
+class MongoDBPipeline:
+    collection_name = 'scrapy_items'
 
-    def __init__(self, db, user, passwd, host):
-        self.db = db
-        self.user = user
-        self.passwd = passwd
-        self.host = host
-
-    def process_item(self, item, spider):
-        return item
+    def __init__(self, mongo_uri, mongo_db):
+        self.mongo_uri = mongo_uri
+        self.mongo_db = mongo_db
 
     @classmethod
     def from_crawler(cls, crawler):
-        db_settings = crawler.settings.getdict("DB_SETTINGS")
-        if not db_settings:  # if we don't define db config in settings
-            raise NotConfigured  # then reaise error
-        db = db_settings['db']
-        user = db_settings['user']
-        passwd = db_settings['passwd']
-        host = db_settings['host']
-        return cls(db, user, passwd, host)  # returning pipeline instance
+        return cls(
+            mongo_uri=crawler.settings.get('MONGO_URI'),
+            mongo_db=crawler.settings.get('MONGO_DATABASE', 'items')
+        )
+
+    def open_spider(self, spider):
+        self.client = pymongo.MongoClient(self.mongo_uri)
+        self.db = self.client[self.mongo_db]
+
+    def close_spider(self, spider):
+        self.client.close()
+
+    def process_item(self, item, spider):
+        self.db[self.collection_name].insert_one(dict(item))
+        return item

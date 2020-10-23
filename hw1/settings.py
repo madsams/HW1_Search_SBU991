@@ -1,4 +1,7 @@
 # -*- coding: utf-8 -*-
+from dotenv import load_dotenv
+
+load_dotenv()
 
 # Scrapy settings for hw1 project
 #
@@ -88,6 +91,14 @@ DOWNLOADER_MIDDLEWARES = {
 # HTTPCACHE_DIR = 'httpcache'
 # HTTPCACHE_IGNORE_HTTP_CODES = []
 # HTTPCACHE_STORAGE = 'scrapy.extensions.httpcache.FilesystemCacheStorage'
+
 FEED_EXPORT_ENCODING = 'utf-8'
 IMAGES_STORE = 'images'
-ITEM_PIPELINES = {'scrapy.pipelines.images.ImagesPipeline': 1}
+
+ITEM_PIPELINES = {
+    'scrapy.pipelines.images.ImagesPipeline': 300,
+    'hw1.pipelines.MongoDBPipeline': 500
+}
+
+MONGO_DATABASE = 'scrapy_items'
+MONGO_URI = 'localhost:27017'
