@@ -7,11 +7,6 @@
 import pymongo
 
 
-class Hw1Pipeline(object):
-    def process_item(self, item, spider):
-        return item
-
-
 class MongoDBPipeline:
     collection_name = 'scrapy_items'
 
