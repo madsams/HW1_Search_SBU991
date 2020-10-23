@@ -2,6 +2,8 @@
 import scrapy
 from scrapy.http import Request
 
+from hw1.dollar import DollarItem
+
 
 def get_nested_text(resp, selector):
     text = ''
@@ -15,17 +17,6 @@ def my_strip(s):
         return s.strip().replace(r'[\t\n]', '')
     else:
         return ""
-
-
-class DollarItem(scrapy.Item):
-    title = scrapy.Field()
-    summery = scrapy.Field()
-    content = scrapy.Field()
-    date = scrapy.Field()
-    tags = scrapy.Field()
-    short_links = scrapy.Field()
-    images = scrapy.Field()
-    image_urls = scrapy.Field()
 
 
 class DollarSpider(scrapy.Spider):
