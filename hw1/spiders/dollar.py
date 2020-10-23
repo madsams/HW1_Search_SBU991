@@ -2,7 +2,7 @@
 import scrapy
 from scrapy.http import Request
 
-from hw1.dollar import DollarItem
+from hw1.items import DollarItem
 
 
 def get_nested_text(resp, selector):
